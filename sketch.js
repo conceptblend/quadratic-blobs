@@ -1,40 +1,33 @@
-// TODO:
-//  - Should probably convert the radii to a factor of the size
-//  - Explore other ways of moving the anchors
-
-const SIZE = 540;
+const SCALE = 2;
+const SIZE = 540 * SCALE;
 const EXPORT_IMAGE = !true;
 const DRAW_BOUNDING_TRIANGLE = !true;
 
 const presets = {
   alpha: {
     label: "alpha",
+    min: 0.1,
+    // max: 0.8,
+    range: 0.6,
   },
 };
 
 let config = presets.alpha;
 
-function setup() {
-  createCanvas(SIZE, SIZE);
-  noFill();
-  strokeWeight( 2 );
-  // Default Stroke
-  stroke( 255, 255, 255, 255 );
-  frameRate( 8 );
+const RANGE = config.range;
+const MIN = SIZE * config.min;
+const MAX = SIZE * ( 1 - config.min );
 
+function setup() {
+  createCanvas( SIZE, SIZE );
+  noFill();
+  strokeWeight( 2 * SCALE );
+  // Default Stroke
+  stroke( 255 );
+
+  frameRate( 8 );
   // noLoop();
 }
-
-function midRandom ( size, range ) {
-  // no checks for correctness
-  let mrange = size * range;
-  let m = Math.random() * mrange - mrange * 0.5;
-  return size * 0.5 + m;
-}
-
-const RANGE = 0.6;
-const MIN = SIZE * 0.1;
-const MAX = SIZE * 0.9;
 
 function draw() {
   background( 32 );
@@ -125,6 +118,13 @@ function buildBlob ( p1, p2, p3 ) {
   ];
 }
 
+function midRandom ( size, range ) {
+  // no checks for correctness
+  let mrange = size * range;
+  let m = Math.random() * mrange - mrange * 0.5;
+  return size * 0.5 + m;
+}
+
 function drawQuadBlob( points ) {
 
   if( DRAW_BOUNDING_TRIANGLE ) {
@@ -173,11 +173,11 @@ function drawQuadBlob2( points ) {
 
   push();
   // noStroke();
-  stroke( 32 );
-  fill( 64 );
+  // stroke( 32 );
+  stroke( 64 );
+  // fill( 64 );
+  noFill();
   beginShape();
-
-  // This has extra points to clean up
 
   tmp = p5.Vector.lerp( points[0], points[1], m );
   vertex( tmp.x, tmp.y );
@@ -227,8 +227,3 @@ function keyPressed() {
 function getName() {
   return `Quad-Blobs-${config.label}-${new Date().toISOString()}`;
 }
-
-
-
-
-
