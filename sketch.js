@@ -1,7 +1,12 @@
-const SCALE = 2;
+const SCALE = 1;
 const SIZE = 540 * SCALE;
 const EXPORT_IMAGE = !true;
 const DRAW_BOUNDING_TRIANGLE = !true;
+
+const METHODS = {
+  RANDOM: 0x01,
+  SINE: 0x02,
+};
 
 const presets = {
   alpha: {
@@ -9,6 +14,7 @@ const presets = {
     min: 0.1,
     // max: 0.8,
     range: 0.6,
+    method: METHODS.SINE
   },
 };
 
@@ -31,18 +37,39 @@ function setup() {
 
 function draw() {
   background( 32 );
- 
-  // TOP
-  let p1 = createVector( MIN + midRandom( MAX-MIN, RANGE ), MIN );
 
-  // LEFT
-  let p2 = createVector( MIN, MIN + midRandom( MAX-MIN, RANGE ) );
+  let p1, p2, p3, p4;
 
-  // BOTTOM
-  let p3 = createVector( MIN + midRandom( MAX-MIN, RANGE ), MAX );
+  switch ( config.method ) {
+    case METHODS.SINE:
+      // TOP
+      let p1x = midSinWave( MAX-MIN, RANGE );
+      p1 = createVector( MIN + p1x, MIN );
 
-  // RIGHT
-  let p4 = createVector( MAX, MIN + midRandom( MAX-MIN, RANGE ) );
+      // LEFT
+      p2 = createVector( MIN, MIN + p1x );
+
+      // BOTTOM
+      p3 = createVector( MIN + p1x, MAX );
+
+      // RIGHT
+      p4 = createVector( MAX, MIN + p1x );
+      break;
+    case METHODS.RANDOM:
+    default:
+      // TOP
+      p1 = createVector( MIN + midRandom( MAX-MIN, RANGE ), MIN );
+
+      // LEFT
+      p2 = createVector( MIN, MIN + midRandom( MAX-MIN, RANGE ) );
+
+      // BOTTOM
+      p3 = createVector( MIN + midRandom( MAX-MIN, RANGE ), MAX );
+
+      // RIGHT
+      p4 = createVector( MAX, MIN + midRandom( MAX-MIN, RANGE ) );
+      break;
+  }
 
   // USE MOUSE TO CONTROL
   // let mx = Math.min( Math.max( 0, mouseX ), SIZE )
@@ -125,6 +152,13 @@ function midRandom ( size, range ) {
   return size * 0.5 + m;
 }
 
+function midSinWave ( size, range ) {
+  // no checks for correctness
+  let mrange = size * range;
+  let m = (0.5 + 0.5 * Math.sin(frameCount * 0.1)) * mrange - mrange * 0.5;
+  return size * 0.5 + m;
+}
+
 function drawQuadBlob( points ) {
 
   if( DRAW_BOUNDING_TRIANGLE ) {
@@ -172,11 +206,13 @@ function drawQuadBlob2( points ) {
       tmp;
 
   push();
-  // noStroke();
-  // stroke( 32 );
-  stroke( 64 );
-  // fill( 64 );
-  noFill();
+
+  // stroke( 64 );
+  // noFill();
+
+  stroke( 32 );
+  fill( 64 );
+  
   beginShape();
 
   tmp = p5.Vector.lerp( points[0], points[1], m );
