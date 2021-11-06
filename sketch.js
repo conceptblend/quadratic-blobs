@@ -201,7 +201,7 @@ function drawQuadBlob2( points ) {
     pop();
   }
 
-  let m = 0.6,
+  let m = 0.6, // 0.05 for blobs
       m_inv = 1.0 - m,
       tmp;
 
